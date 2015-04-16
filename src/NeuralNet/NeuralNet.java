@@ -28,7 +28,7 @@ public class NeuralNet {
 
 		}
 
-		//initialize input-hidden weights
+		//initialize hidden-output weights
 		this.hiddenOutputWeights = new ArrayList<>();
 		for(int i = 0 ; i < hn ; ++i){
 			this.hiddenOutputWeights.add(new ArrayList<Double>());

@@ -15,9 +15,9 @@ public class BackPropagation {
 	private Double learningRate;
 	
 	
-	public BackPropagation(NeuralNet nn,Integer numOfIterations){
+	public BackPropagation(NeuralNet nn,Integer numOfIterations,double gamma){
 		this.neuralNetwork = nn;
-		this.feedForward = new FeedForward(nn, new Sigmoid(1.0));
+		this.feedForward = new FeedForward(nn, new Sigmoid(gamma));
 		this.totalMSE = 0.0;
 		this.learningRate = 1.0;
 		this.numberOfIterationsPerTrainingSet = numOfIterations;
@@ -40,16 +40,20 @@ public class BackPropagation {
 	
 	public void executeBackPropagation(ArrayList<ArrayList<Double> > ins,
 			ArrayList<ArrayList<Double> > out){
-
-		setTrainingExamples(ins, out);
 		
+		
+		
+		setTrainingExamples(ins, out);
+		double mnError = 1000000.0;
+		NeuralNet bestYet = new NeuralNet(neuralNetwork.getNumberOfInputNodes(), neuralNetwork.getNumberOfHiddenNodes(), neuralNetwork.getNumberOfOutputNodes());
+
 		//iterate over the examples many times
 		for(int globalIterationCount = 0;globalIterationCount < this.numberOfIterationsPerTrainingSet;++globalIterationCount){
+			double errorPerIteration = 0;
 			//for each example
 			for(int trainingExampleI = 0;trainingExampleI < this.trainingInputs.size();++trainingExampleI){
 				
 				//perform feed forward
-				feedForward.setNeuralNetwork(neuralNetwork);
 				ArrayList<Double> computedOutput = this.feedForward.executeAndReturnResult(trainingInputs.get(trainingExampleI));
 				
 				
@@ -59,7 +63,8 @@ public class BackPropagation {
 					Double delta = trainingOutputs.get(trainingExampleI).get(outputIndex)-computedOutput.get(outputIndex);
 					Double sigDerivative = computedOutput.get(outputIndex)*(1-computedOutput.get(outputIndex));
 					deltaWO.add(delta*sigDerivative);
-					this.totalMSE += (delta*delta);
+					totalMSE += (delta*delta);
+					errorPerIteration += (delta*delta);
 				}
 				
 				//compute errors on hidden layer
@@ -107,8 +112,12 @@ public class BackPropagation {
 				}
 				
 			}
-			
+			if(errorPerIteration < mnError){
+				bestYet = neuralNetwork;
+				mnError = errorPerIteration;
+			}
 		}
+		neuralNetwork = bestYet;
 		this.totalMSE /= 2.0;
 	}
 

@@ -9,15 +9,16 @@ import NeuralNet.NeuralNet;
 public class FeedForward {
 	private NeuralNet neuralNetwork;
 	private ActivationFunction activationFunction;
-	private List<Double> inputSet;
-	private List<Double> netHidden;
+	private ArrayList<Double> inputSet;
+	private ArrayList<Double> netHidden;
 
 	public FeedForward(NeuralNet n,ActivationFunction a){
 		this.neuralNetwork = n;
 		this.activationFunction = a;
 		netHidden = new ArrayList<Double>();
+		inputSet = new ArrayList<Double>();
 	}
-	public void setInputSet(List<Double> input){
+	public void setInputSet(ArrayList<Double> input){
 		this.inputSet = input;
 	}
 	public Double getNetHidden(Integer i){
@@ -26,7 +27,15 @@ public class FeedForward {
 	public void setNeuralNetwork(NeuralNet n){
 		neuralNetwork = n;
 	}
-	public ArrayList<Double> executeAndReturnResult(List<Double> input){
+	public NeuralNet getNeuralNetwork(){
+		return neuralNetwork;
+	}
+	public ArrayList<Double> executeAndReturnResult(ArrayList<Double> input){
+		if(inputSet != null)
+			inputSet=new ArrayList<Double>();
+		if(netHidden != null)
+			netHidden=new ArrayList<Double>();
+		
 		setInputSet(input);
 		
 		ArrayList<Double> netOutput = new ArrayList<Double>();
@@ -52,7 +61,8 @@ public class FeedForward {
 						*
 						netHidden.get(j);
 			}
-			netOutput.add(activationFunction.activate(netOutputK + neuralNetwork.getOutputBias(k)));
+			Double out = activationFunction.activate(netOutputK + neuralNetwork.getOutputBias(k));
+			netOutput.add(out);
 		}
 		
 		return netOutput;
